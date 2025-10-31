@@ -1,0 +1,11 @@
+sentence,label
+The quick brown fox jumps over the lazy dog.,1
+She go to the store yesterday.,0
+Programming is fun and challenging.,1
+He don't know the answer.,0
+This project is a good MLOps exercise.,1
+Docker containers is very useful for deployment.,0
+MLOps is a combination of Machine Learning and DevOps.,1
+I is programmer.,0
+A model need to be saved correctly.,0
+Python is a great language for ML.,1

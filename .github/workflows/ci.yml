@@ -1,0 +1,63 @@
+# .github/workflows/ci.yml
+name: CI/CD MLOps Pipeline (Local-Focused)
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+      
+jobs:
+  test_and_build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python Environment
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Install Python Dependencies
+        run: pip install -r requirements.txt
+        
+      - name: Install NLTK resources
+        run: python -c "import nltk; nltk.download('punkt')"
+        
+      - name: Run Model Training & Save Artifacts
+        # Runs your ML code to train the model and save .pkl files
+        run: python src/train.py
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        
+      - name: Build and Test Docker Image
+        # Builds the image using the Dockerfile and loads it onto the runner
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false 
+          tags: nlp-classifier:latest
+          load: true 
+          
+      - name: Verify Container Health Check
+        # Starts the container and uses 'curl' to check the /health endpoint
+        run: |
+          echo "Starting Docker container for CI test..."
+          docker run -d -p 8000:8000 --name ci_test_app nlp-classifier:latest
+          
+          echo "Waiting 15 seconds for FastAPI to start..."
+          sleep 15 
+          
+          # Check the health endpoint. '-f' ensures the step fails on non-200 status
+          echo "Checking API Health Check endpoint..."
+          curl -f http://localhost:8000/health
+          
+          # Clean up the container
+          docker stop ci_test_app
+          docker rm ci_test_app
