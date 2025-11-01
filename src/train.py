@@ -32,7 +32,7 @@ def train_and_save_model(data_path='data/sentences.csv', model_dir='model'):
     # 4. Evaluation (Testing on the training data itself)
     predictions = model.predict(X_vec)
     accuracy = accuracy_score(y_train, predictions)  # Use y_train here
-    print(f"Model Trained. Test/Train Accuracy: {accuracy:.4f}")  # Accuracy should be high!
+    print(f"Model Trained. Final Accuracy: {accuracy:.4f}")  # Accuracy should be high!
 
     # 5. Save Artifacts
     # ... (rest of the saving code remains the same) ...
